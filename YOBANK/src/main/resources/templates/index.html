@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+  layout:decorator="template1">
+<head>
+<meta charset="UTF-8"/>
+<link rel="stylesheet" type= "text/css" href="css/bootstrap.min.css"
+th:href="@{css/bootstrap.min.css}"/>
+<title>My Bank</title>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="col-md-6">
+			<div class="panel panel-primary">
+				<div class="panel-heading">Find Account</div>
+				<div class="panel-body">
+					<form th:action="@{/checkAcc}" method="get">
+						<div>
+							<label>Enter Account</label>
+							<input type="text" name="accId" th:value="${accountId}"/>
+							<button type="submit" class="btn btn-primary">Send</button>
+						</div>
+					</form>
+					<div class="text-danger" th:if="${exception}" th:text="${exception.message}"></div>
+				</div>
+			</div>
+			
+			<div class="panel panel-primary" th:if="${account}">
+				<div class="panel-heading">Account Information</div>
+				<div class="panel-body">
+					<div>
+						<label>Name</label>
+						<label th:text="${account.customer.name}" ></label>
+					</div>
+					<div>
+						<label>Account ID: </label>
+						<label th:text="${account.id}" ></label>
+					</div>
+					<div>
+						<label>Balance: </label>
+						<label th:text="${account.balance}" ></label>
+					</div>
+					<div>
+						<label>Opened Since: </label>
+						<label th:text="${account.creationDate}" ></label>
+					</div>
+					<div>
+						<label>Account Type: </label>
+						<label th:text="${account.class.simpleName}" ></label>
+					</div>
+					
+					<div th:if="${account.class.simpleName == 'CheckingAccount'}">
+						<label>Minimum Overdraft: </label>
+						<label th:text="${account.minBalance}" ></label>
+					</div>
+					
+					<div th:if="${account.class.simpleName == 'SavingAccount'}">
+						<label>Interest Rate: </label>
+						<label th:text="${account.interest}" ></label>
+					</div>
+				</div>
+			</div>
+			
+			</div>
+		<div class="col-md-6">
+			<div sec:authorize="${hasRole('ROLE_ADMIN')}">
+			<div class="panel panel-primary" th:if="${account}">
+				<div class="panel-heading">Perform Transaction</div>
+				<div class="panel-body">
+					<form th:action="@{/makeTransaction}" method="post">
+						<div>
+							<label>Account: </label>
+							<input type="hidden" name = "accId" th:value="${accountId}"/>
+							<label th:text="${accountId}"></label>
+						</div>
+						<div>
+						  <input type="radio" name="typeOperation" value="deposit" checked="checked" 
+						  		onchange="document.getElementById('forAccount').style.display='none'"/> Deposit
+						  <input type="radio" name="typeOperation" value="withdraw"
+						  		onchange="document.getElementById('forAccount').style.display='none'" /> Withdraw
+						  <input type="radio" name="typeOperation" value="transfer" 
+						  		onchange="document.getElementById('forAccount').style.display='block'"/> Transfer
+						</div>
+						
+						<div id="forAccount" style="display: none;">
+							<label>To Account: </label>
+							<input type="text" name="accId2"/>
+						</div>
+		
+						<div>
+							<label>Amount: </label>
+							<input type="text" name="amount"/>
+						</div>
+						<div class="text-danger" th:text="${#httpServletRequest.getParameter('error')}"></div>
+						<button type="submit" class="btn btn-primary">Ok</button>
+					</form>
+				</div>
+			</div>
+			</div>
+			<div class="panel panel-primary" th:if = "${account}">
+				<div class="panel-heading">All Transactions</div>
+				<div class="panel-body">
+					<table class="table table-striped">
+						<tr>
+							<th>ID</th><th>Type</th><th>Date</th><th>Amount</th>
+						</tr>
+						
+						<tr th:each="t:${listTransaction}">
+							<td th:text="${t.id}"></td>
+							<td th:text="${t.class.simpleName}"></td>
+							<td th:text="${t.date}"></td>
+							<td th:text="${t.amount}"></td>
+						</tr>
+					</table>
+					<div class="container">
+						<ul class="nav nav-pills">
+							<li th:each="t,status:${pages}"> 
+								<a th:href="@{/checkAcc(accId=${accountId},page=${status.index})}"
+								th:text="${status.index}"></a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

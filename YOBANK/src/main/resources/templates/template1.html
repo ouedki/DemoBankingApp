@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+<meta charset="UTF-8"/>
+<title>My Bank</title>
+<link rel="stylesheet" type= "text/css" href="css/bootstrap.min.css"
+th:href="@{css/bootstrap.min.css}"/>
+<link rel="stylesheet" type="text/css" href="css/nav.css"
+	th:href="@{css/nav.css}"/>
+</head>
+<body>
+	<header>
+		
+		<ul>
+		  	<li><a th:href="@{/operations}">Transaction</a></li>
+			<li><a th:href="@{/checkAcc}">Account</a></li>
+			<li><a th:href="@{/customer}">Customer</a></li>
+			<li class="left"><a th:href="@{/login?logout}">Logout</a></li>
+		</ul>
+
+	</header>
+	<section layout:fragment="content"></section>
+	<footer>
+		<nav class="footer">
+			<small>@10707 West Interstate 10 San Antonio, TX, 78230</small>
+		</nav>
+	</footer>
+</body>
+</html>
